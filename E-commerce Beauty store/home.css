@@ -1,0 +1,197 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100vw;
+    height: 200vh;
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    height: 4%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ede0d4;
+}
+
+.header-text {
+    font-size: 34px;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    color: #432818;
+    padding-left: 8px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.nav-items {
+    color: #432818;
+    font-size: 18px;
+    text-decoration: none;
+    font-style: italic;
+    padding-right: 15px;
+}
+
+.nav-items:hover {
+    text-decoration: underline;
+}
+
+.fa-caret-down {
+    font-size: 14px;
+}
+
+/* Dropdown button */
+.dropbtn {
+  background-color: #ede0d4;
+  color: #432818;
+  margin-right: 5px;
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  padding-right: 15px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ede0d4;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+    color: #432818;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 15px;
+    font-size: 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    text-decoration: underline;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  text-decoration: underline;
+}
+
+/* Banner */
+.banner {
+    width: 100%;
+    height: 45%;
+}
+
+.bg-img {
+    background-image: url("Brown\ Minimal\ and\ Modern\ Beauty\ Skincare\ Banner\ Store.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Bestsellers */
+.bestsellers {
+    width: 100%;
+    height: 25%;
+    margin-top: 50px;
+    border: 2px solid black;
+}
+
+.bestsellers .heading {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+}
+
+.bestseller-items {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bestseller-images {
+    flex: 1; 
+    height: 100%;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #e6ccb2;
+    border-radius: 10px;
+}
+
+.bestseller-images img {
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.bestseller-images h4 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.bestseller-images .desc {
+    font-size: 14px;
+    color: #555;
+}
+
+/* @media (max-width : 1024px){   
+    .banner {
+        height: 30%;
+    }
+    .header-text {
+        font-size: 20px;
+    }
+    .nav {
+        font-size: 12px;
+        padding-right: 10px;
+    }
+    .fa-caret-down {
+        font-size: 8px;
+    }
+} */
+
+@media (min-width: 601px) and (max-width : 1024px){   
+    .banner {
+        height: 40%;
+    }
+}
+
+@media (min-width: 300px) and (max-width: 600px) {   
+    .banner {
+        height: 35%;
+    }
+    .header-text {
+        font-size: 20px;
+    }
+    .nav-items {
+        font-size: 12px;
+        padding-right: 10px;
+    }
+    .fa-caret-down {
+        font-size: 8px;
+    }
+}
+
