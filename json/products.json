@@ -1,0 +1,256 @@
+[
+  {
+    "id": 1,
+    "name": "Daily Life Forever52 Pro Liquid Foundation",
+    "category": "Forever52",
+    "oldPrice": "₹1699",
+    "newPrice": "₹1495",
+    "off": "12% Off",
+    "rating": "★★★★☆ (15228)",
+    "image": "../images/forever52_foundation.avif",
+    "page": "foundation_1.html"
+  },
+  {
+    "id": 2,
+    "name": "Maybelline New York Fit Me Matte Foundation with SPF22",
+    "category": "Maybelline",
+    "oldPrice": "₹649",
+    "newPrice": "₹389",
+    "off": "40% Off",
+    "rating": "★★★★★ (1273)",
+    "image": "../images/maybelline matte_foundation.avif",
+    "page": "foundation_2.html"
+  },
+  {
+    "id": 3,
+    "name": "Charlotte Tilbury Airbrush Flawless Foundation",
+    "newPrice": "₹5000",
+    "rating": "★★★★☆ (2513)",
+    "image": "../images/charlotte_foundation.avif",
+    "page": "foundation_3.html"
+  },
+  {
+    "id": 4,
+    "name": "Kay Beauty Full Coverage Cloud Cushion Foundation",
+    "newPrice": "₹1599",
+    "rating": "★★★★☆ (206)",
+    "image": "../images/kay beauty foundation.avif",
+    "page": "foundation_4.html"
+  },
+  {
+    "id": 5,
+    "name": "Lakme Be-Jewel Luminous Skin Tint",
+    "category": "Lakme",
+    "oldPrice": "₹1199",
+    "newPrice": "₹1079",
+    "off": "10% Off",
+    "rating": "★★★★☆(23)",
+    "image": "../images/lakme foundation.avif"
+  },
+  {
+    "id": 6,
+    "name": "M.A.C Studio Fix Fluid SPF 15 Soft Matte Foundation",
+    "category": "mac",
+    "oldPrice": "₹4000",
+    "newPrice": "₹3400",
+    "off": "15% Off",
+    "rating": "★★★★☆(13586)",
+    "image": "../images/mac foundation.avif"
+  },
+  {
+    "id": 7,
+    "name": "L’Oreal Paris Infallible 24H Tinted Serum Foundation",
+    "category": "loreal",
+    "oldPrice": "₹999",
+    "newPrice": "₹749",
+    "off": "25% Off",
+    "rating": "★★★★☆(589)",
+    "image": "loreal foundation.avif",
+    "page": "../images/foundation_7.html"
+  },
+  {
+    "id": 8,
+    "name": "Nykaa All Day Matte Long Wear Liquid Foundation",
+    "oldPrice": "₹649",
+    "newPrice": "₹487",
+    "off": "25% Off",
+    "rating": "★★★★☆(13323)",
+    "image": "../images/nykaa foundation.avif"
+  },
+  {
+    "id": 9,
+    "name": "Swiss Beauty High Performance Foundation",
+    "oldPrice": "₹429",
+    "newPrice": "₹356",
+    "off": "17% Off",
+    "rating": "★★★★☆(152333)",
+    "image": "../images/swiss beauty foundation.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Kay Beauty Hydrating Foundation",
+    "oldPrice": "₹1299",
+    "newPrice": "₹974",
+    "off": "25% Off",
+    "rating": "★★★★☆(19927)",
+    "image": "../images/kay_beauty foundation.avif"
+  },
+  {
+    "id": 11,
+    "name": "Maybelline New York Fit Me Matte Oil Control Foundation",
+    "category": "Maybelline",
+    "oldPrice": "₹329",
+    "newPrice": "₹227",
+    "off": "31% Off",
+    "rating": "★★★★☆(120631)",
+    "image": "../images/maybelline_foundation.avif"
+  },
+  {
+    "id": 12,
+    "name": "MARS SPF50 PA++++ High Coverage Liquid Foundation",
+    "category": "mars",
+    "oldPrice": "379",
+    "newPrice": "₹349",
+    "off": "8% Off",
+    "rating": "★★★★☆(9680)",
+    "image": "../images/mars foundation.avif"
+  },
+  {
+    "id": 13,
+    "name": "Daily Life Forever52 Ultra Definition Liquid Foundation",
+    "category": "Forever52",
+    "oldPrice": "₹1099",
+    "newPrice": "₹967",
+    "off": "12% Off",
+    "rating": "★★★★☆(32050)",
+    "image": "../images/daily life foundation.avif"
+  },
+  {
+    "id": 14,
+    "name": "Lakme Xtraordin-Airy Mattereal Mousse Foundation",
+    "category": "Lakme",
+    "oldPrice": "₹999",
+    "newPrice": "₹699",
+    "off": "30% Off",
+    "rating": "★★★★☆(52799)",
+    "image": "../images/lakme_foundation.avif"
+  },
+  {
+    "id": 15,
+    "name": "Lamel Smart Skin Serum Tinted Foundation SPF30+",
+    "oldPrice": "₹695",
+    "newPrice": "₹626",
+    "off": "10% Off",
+    "rating": "★★★★☆(57)",
+    "image": "../images/lamel foundation.avif"
+  },
+  {
+    "id": 16,
+    "name": "Smashbox Halo Healthy Glow All-In-One Tinted Foundation",
+    "newPrice": "₹1710",
+    "rating": "★★★★★(2071)",
+    "image": "../images/smashbox foundation.avif"
+  },
+  {
+    "id": 17,
+    "name": "Maybelline New York Super Stay Lumi-Matte Foundation",
+    "category": "Maybelline",
+    "oldPrice": "₹399",
+    "newPrice": "₹379",
+    "off": "5% Off",
+    "rating": "★★★★☆(45)",
+    "image": "../images/maybelline_3 foundation.avif"
+  },
+  {
+    "id": 18,
+    "name": "Bobbi Brown Mini Weightless  Matte Finish Foundation",
+    "newPrice": "₹2500",
+    "rating": "★★★★☆(1182)",
+    "image": "../images/bobbi brown foundation.avif"
+  },
+  {
+    "id": 19,
+    "name": "Lakme 9 To 5 CC Cream With SPF30 PA++ Foundation",
+    "category": "Lakme",
+    "oldPrice": "₹399",
+    "newPrice": "₹359",
+    "off": "10% Off",
+    "rating": "★★★★☆(71119)",
+    "image": "../images/lakme_2 foundation.avif"
+  },
+  {
+    "id": 20,
+    "name": "MARS SPF50 PA++++ Artistry Liquid Foundation",
+    "category": "mars",
+    "oldPrice": "₹899",
+    "newPrice": "₹800",
+    "off": "11% Off",
+    "rating": "★★★★★(12)",
+    "image": "../images/mars_3 foundation.avif"
+  },
+  {
+    "id": 21,
+    "name": "Maybelline New York Super Stay Lumi-Matte Liquid Foundation",
+    "category": "Maybelline",
+    "oldPrice": "₹825",
+    "newPrice": "₹536",
+    "off": "35% Off",
+    "rating": "★★★★☆(11272)",
+    "image": "../images/maybelline_2 foundation.jpeg"
+  },
+  {
+    "id": 22,
+    "name": "L'Oreal Paris Infallible 32H Fresh Wear Foundation",
+    "category": "loreal",
+    "oldPrice": "1099",
+    "newPrice": "₹1044",
+    "off": "5% Off",
+    "rating": "★★★★☆(7614)",
+    "image": "../images/loreal_2 foundation.avif"
+  },
+  {
+    "id": 23,
+    "name": "M.A.C Studio Fix Fluid SPF 15 Mini Soft Matte Foundation",
+    "category": "mac",
+    "newPrice": "₹2250",
+    "off": "20% Off",
+    "rating": "★★★★☆(17607)",
+    "image": "../images/mac_2 foundation.avif"
+  },
+  {
+    "id": 24,
+    "name": "MARS Lightweight BB Cream Foundation",
+    "category": "mars",
+    "oldPrice": "₹339",
+    "newPrice": "₹298",
+    "off": "12% Off",
+    "rating": "★★★★☆(6206)",
+    "image": "../images/mars_2 foundation.avif"
+  },
+  {
+    "id": 25,
+    "name": "L'Oreal Paris True Match Super-Blendable Foundation",
+    "category": "loreal",
+    "newPrice": "₹1099",
+    "rating": "★★★★☆(8729)",
+    "image": "../images/loreal_3 foundation.avif"
+  },
+  {
+    "id": 26,
+    "name": "Maybelline New York Liquid Foundation",
+    "category": "Maybelline",
+    "oldPrice": "₹918",
+    "newPrice": "₹643",
+    "off": "30% Off",
+    "rating": "★★★★☆(8729)",
+    "image": "../images/maybelline_4 foundation.jpeg"
+  },
+  {
+    "id": 27,
+    "name": "L'Oreal Paris Infallible Matte Liquid Foundation",
+    "category": "loreal",
+    "newPrice": "₹899",
+    "rating": "★★★★☆(6283)",
+    "image": "../images/loreal_4 foundation.avif"
+  }
+]
