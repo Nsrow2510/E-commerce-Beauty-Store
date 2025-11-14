@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Filters from "../components/Filters";
 import ProductCard from "../components/ProductCard";
-import productsData from "../data/products.json";
+// import productsData from "../data/products.json";
 
 export default function Foundation() {
   const [products, setProducts] = useState([]);
@@ -11,7 +11,11 @@ export default function Foundation() {
 
   // LOAD PRODUCTS
   useEffect(() => {
-    setProducts(productsData);
+    // setProducts(productsData);
+    fetch('/products.json')
+  .then(res => res.json())
+  .then(data => setProducts(data));
+
   }, []);
 
   // CART FUNCTIONS
