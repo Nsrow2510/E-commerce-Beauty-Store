@@ -74,16 +74,19 @@ body {
   color: #ad1457;
 }
 
-.nav-links a {
-  margin: 0 1rem;
+.nav-center .tools-link {
+  cursor: pointer;
+  padding: 10px;
+  display: inline-block;
+  color: #ad1457;        /* same color as other labels */
+  font-weight: bold;
   text-decoration: none;
-  color: #4b1c2f;
-  font-weight: 500;
-  font-size: 14px;
-  transition: color 0.3s ease;
+  margin: 0 8px;         /* keep same spacing as other center items */
+  transition: color 0.2s ease;
 }
 
-.nav-links a:hover {
+.nav-center .tools-link:hover,
+.nav-center .tools-link:focus {
   color: #e91e63;
   text-decoration: underline;
 }

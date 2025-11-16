@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
   // Check for a logged-in user in localStorage
   const user = JSON.parse(localStorage.getItem("velouraUser"));
-  const loginLink = document.querySelector('.icons a[href*="signin"], .icons a[href*="login"]');
+  const loginLink = document.querySelector('.icons a[href*="signUp"], .icons a[href*="login"]');
 
   if(user && user.name) {
     // Replace Login/SignUp with user's name and a logout link

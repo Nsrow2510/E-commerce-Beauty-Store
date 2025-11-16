@@ -97,14 +97,14 @@
     <div class="dropdown">
       <span class="dropdown-label">Fragrances</span>
       <div class="mega-menu">
-        <div class="mega-column">
+        <!-- <div class="mega-column">
           <h4>By Type</h4>
           <ul>
             <li><a href="#">Perfume</a></li>
             <li><a href="#">Body Mists</a></li>
             <li><a href="#">Roll-ons</a></li>
           </ul>
-        </div>
+        </div> -->
         <div class="mega-column">
           <h4>By Gender</h4>
           <ul>
@@ -116,7 +116,14 @@
       </div>
     </div>
 
-    <a href="tools.html" class="nav-link">Tools</a>
+    <div class="dropdown">
+      <span class="dropdown-label">Tools</span>
+    </div>
+
+    <!-- <div class="nav-links">
+      <a href="tools.html" class="nav-link">Tools</a>
+    </div> -->
+
   </nav>
 
   <!-- Right: Search + Icons -->
@@ -126,8 +133,8 @@
       <button id="searchButtn">Search</button>
     </div>
 
-    <a href="login.html" class="icon-link">👤</a>
-    <a href="cart.html" class="icon-link cart">
+    <a href="login.html" class="icon-link" id="login-user-link">👤</a>
+    <a href="AddToCart.html" class="icon-link cart">
       🛒<span class="badge">0</span>
     </a>
   </div>
@@ -532,6 +539,172 @@
   </div>
 </footer>
 
+<!-- <script src="../javascript/script.js"></script> -->
+
+
+
+<script>
+  const CART_API_URL = "http://localhost:3000/cart";
+const cartlist = document.getElementById("cartlist");
+
+// Update the cart badge count
+function updateCartCount() {
+  fetch(CART_API_URL)
+    .then(res => res.json())
+    .then(items => {
+      let count = 0;
+      items.forEach(item => { count += item.qty; });
+      const countSpan = document.getElementById("cart-count");
+      if (countSpan) countSpan.innerText = count;
+    })
+    .catch(() => {
+      const countSpan = document.getElementById("cart-count");
+      if (countSpan) countSpan.innerText = 0;
+    });
+}
+
+// Render items in cart list
+function getCartItems() {
+  fetch(CART_API_URL)
+    .then(res => res.json())
+    .then(items => {
+      cartlist.innerHTML = "";
+      let totalAmount = 0;
+      let totalQty = 0;
+
+      if (items.length === 0) {
+        cartlist.innerHTML = "<p>Your cart is empty.</p>";
+        updateCartCount();
+        return;
+      }
+
+      items.forEach(item => {
+        totalAmount += item.price * item.qty;
+        totalQty += item.qty;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <img src="${item.image}" width="70" alt="${item.title}">
+          <div>
+            <p>${item.title}</p>
+            <p>₹${item.price} x ${item.qty}</p>
+            <button class="qty-btn" data-id="${item.id}" data-action="decrease">-</button>
+            <button class="qty-btn" data-id="${item.id}" data-action="increase">+</button>
+            <button class="remove-btn" data-id="${item.id}">Remove</button>
+          </div>
+        `;
+        cartlist.appendChild(div);
+      });
+
+      const totalElement = document.getElementById("cart-total-amount");
+      if (totalElement) {
+        totalElement.innerText = `Total (${totalQty} items): ₹${totalAmount}`;
+      }
+      updateCartCount();
+    }).catch(() => {
+      cartlist.innerHTML = "<p>Failed to load cart items.</p>";
+      updateCartCount();
+    });
+}
+
+// Change quantity or remove item from cart
+function changeQty(id, newQty) {
+  if (newQty <= 0) {
+    removeFromCart(id);
+  } else {
+    fetch(`${CART_API_URL}/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ qty: newQty })
+    }).then(() => getCartItems());
+  }
+}
+
+function removeFromCart(id) {
+  fetch(`${CART_API_URL}/${id}`, { method: 'DELETE' })
+    .then(() => getCartItems());
+}
+
+// Event delegation for cart interaction buttons within cartlist
+cartlist.addEventListener("click", (event) => {
+  const target = event.target;
+  if (target.classList.contains("qty-btn")) {
+    const id = target.getAttribute("data-id");
+    const action = target.getAttribute("data-action");
+
+    const itemDiv = target.closest(".cart-item");
+    const qtyText = itemDiv.querySelector("p:nth-child(2)").textContent;
+    const currentQty = parseInt(qtyText.split("x")[1].trim());
+
+    if (action === "increase") {
+      changeQty(id, currentQty + 1);
+    } else if (action === "decrease") {
+      changeQty(id, currentQty - 1);
+    }
+  } else if (target.classList.contains("remove-btn")) {
+    const id = target.getAttribute("data-id");
+    removeFromCart(id);
+  }
+});
+
+// Add to cart from product buttons
+document.addEventListener("DOMContentLoaded", () => {
+  getCartItems();
+  updateCartCount();
+
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const card = button.closest('.product-box');
+      const title = card.querySelector('.product-name').innerText.trim();
+      // Extract price as number ignoring currency symbols
+      const priceText = card.querySelector('.price').innerText.trim();
+      const price = parseInt(priceText.replace(/[₹,]/g, ''));
+      const image = card.querySelector('img').src;
+
+      const product = { title, price, qty: 1, image };
+
+      // Check if product already in cart and update quantity if so
+      const existing = await fetch(`${CART_API_URL}?title=${encodeURIComponent(title)}`)
+        .then(res => res.json())
+        .catch(() => []);
+
+      if (existing.length > 0) {
+        const existingItem = existing[0];
+        fetch(`${CART_API_URL}/${existingItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ qty: existingItem.qty + 1 })
+        })
+          .then(() => {
+            alert(`Quantity increased for ${title}!`);
+            updateCartCount();
+            getCartItems();
+          })
+          .catch(() => alert('Error updating quantity.'));
+      } else {
+        // Add new product to cart
+        fetch(CART_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(product)
+        })
+          .then(() => {
+            alert(`${title} added to cart!`);
+            updateCartCount();
+            getCartItems();
+          })
+          .catch(() => alert('Error adding product.'));
+      }
+    });
+  });
+});
+
+
+
+</script>
+
   <script src="../javascript/script.js"></script>
+  <script src="../javascript/userAccount.js"></script>
 </body>
 </html>

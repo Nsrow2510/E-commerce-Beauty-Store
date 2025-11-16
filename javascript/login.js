@@ -28,7 +28,7 @@ document.getElementById("signin-form").addEventListener("submit", function(event
           globalMsg.style.color = "#3c763d";
           globalMsg.innerText = "Sign in successful! Redirecting...";
           setTimeout(() => {
-            window.location.href = "fragrances_women.html";
+            window.location.href = "main.html";
           }, 1500);
         } else {
           alert("Incorrect password. Please try again.");
