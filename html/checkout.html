@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veloura Checkout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f6e9f0;
+      color: #4b1c2f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      background-color: #fce4ec;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(186,104,200,0.15);
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #ad1457;
+    }
+
+    .nav-links a {
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      color: #ad1457;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #e91e63;
+    }
+
+    .checkout-container {
+      max-width: 600px;
+      margin: 2rem auto 4rem;
+      padding: 1.5rem 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(186,104,200,0.13);
+    }
+
+    h1, h2 {
+      color: #be138e;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    #cart-items {
+      margin-bottom: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 1rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .cart-summary p {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    form label {
+      display: block;
+      margin: 0.75rem 0 0.25rem;
+      font-weight: 600;
+      color: #701a53;
+    }
+
+    form input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e9b1d1;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      background: #fdf0f6;
+      color: #701a53;
+      transition: border-color 0.3s;
+    }
+
+    form input:focus {
+      border-color: #be138e;
+      outline: none;
+    }
+
+    .place-order-btn {
+      margin-top: 1.5rem;
+      background-color: #be138e;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    .place-order-btn:hover {
+      background-color: #95126b;
+    }
+
+    #order-message {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+      color: #3c763d;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">Veloura</div>
+    <nav class="nav-links">
+      <a href="AddToCart.html">Cart</a>
+      <a href="index.html">Home</a>
+    </nav>
+  </header>
+
+  <main class="checkout-container">
+    <h1>Checkout</h1>
+
+    <div id="cart-items"></div>
+
+    <div class="cart-summary">
+      <p id="total-amount">Total: ₹0</p>
+    </div>
+
+    <form id="checkout-form">
+      <h2>Shipping Information</h2>
+
+      <label for="name">Name</label>
+      <input id="name" type="text" placeholder="Full Name" required />
+
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="Email Address" required />
+
+      <label for="mobile">Mobile Number</label>
+      <input id="mobile" type="tel" placeholder="Mobile Number" pattern="[0-9]{10}" title="Enter 10 digit phone number" required />
+
+      <label for="address">Address</label>
+      <input id="address" type="text" placeholder="Shipping Address" required />
+
+      <button type="submit" class="place-order-btn">Place Order</button>
+    </form>
+
+    <div id="order-message"></div>
+  </main>
+
+  <script>
+    const CART_API_URL = "http://localhost:3000/cart";
+const ORDERS_API_URL = "http://localhost:3000/orders";
+const USERS_API_URL = "http://localhost:3000/users";
+
+const cartItemsDiv = document.getElementById("cart-items");
+const totalAmountP = document.getElementById("total-amount");
+const checkoutForm = document.getElementById("checkout-form");
+const orderMessageDiv = document.getElementById("order-message");
+
+const storedUser = JSON.parse(localStorage.getItem("velouraUser"));
+
+if (!storedUser) {
+  alert("Please login first!");
+  window.location.href = "login.html";
+} else {
+  // Prefill checkout form with stored user data
+  fetch(`${USERS_API_URL}/${storedUser.id}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch user");
+      return res.json();
+    })
+    .then(userData => {
+      checkoutForm.name.value = userData.name || "";
+      checkoutForm.email.value = userData.email || "";
+      checkoutForm.mobile.value = userData.mobile || "";
+      if (userData.address && typeof userData.address === "object") {
+        checkoutForm.address.value = [
+          userData.address.street,
+          userData.address.city,
+          userData.address.state,
+          userData.address.country,
+          userData.address.pincode
+        ].filter(Boolean).join(", ");
+      } else {
+        checkoutForm.address.value = userData.address || "";
+      }
+    })
+    .catch(() => {
+      // Ignore fetch fail here
+    });
+
+  // Load cart items
+  function loadCart() {
+    fetch(CART_API_URL)
+      .then(res => res.json())
+      .then(items => {
+        cartItemsDiv.innerHTML = "";
+        if (items.length === 0) {
+          cartItemsDiv.innerHTML = "<p>Your cart is empty.</p>";
+          totalAmountP.innerText = "";
+          checkoutForm.style.display = "none";
+          return;
+        }
+
+        let total = 0;
+        items.forEach(item => {
+          total += item.price * item.qty;
+          const div = document.createElement("div");
+          div.className = "cart-item";
+          div.textContent = `${item.title} (x${item.qty}) - ₹${item.price * item.qty}`;
+          cartItemsDiv.appendChild(div);
+        });
+
+        totalAmountP.innerText = `Total: ₹${total}`;
+        checkoutForm.style.display = "block";
+      })
+      .catch(() => {
+        cartItemsDiv.innerHTML = "<p>Failed to load cart items.</p>";
+        totalAmountP.innerText = "";
+        checkoutForm.style.display = "none";
+      });
+  }
+
+  loadCart();
+
+  checkoutForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = checkoutForm.name.value.trim();
+    const email = checkoutForm.email.value.trim();
+    const mobile = checkoutForm.mobile.value.trim();
+    const address = checkoutForm.address.value.trim();
+
+    if (!name || !email || !mobile || !address) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    fetch(CART_API_URL)
+      .then(res => res.json())
+      .then(cartItems => {
+        if (cartItems.length === 0) {
+          alert("Your cart is empty. Add items before placing an order.");
+          return;
+        }
+
+        const order = {
+          name,
+          email,
+          mobile,
+          address,
+          items: cartItems,
+          totalAmount: cartItems.reduce((sum, item) => sum + item.price * item.qty, 0),
+          orderDate: new Date().toISOString(),
+        };
+
+        fetch(ORDERS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(order),
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to place order");
+          return response.json();
+        })
+        .then(() => {
+          // Update user address
+          return fetch(`${USERS_API_URL}/${storedUser.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ address }),
+          });
+        })
+        .then(() => {
+          // Clear the cart items
+          return fetch(CART_API_URL)
+            .then(res => res.json())
+            .then(cartItems => Promise.all(
+              cartItems.map(item => fetch(`${CART_API_URL}/${item.id}`, { method: "DELETE" }))
+            ));
+        })
+        .then(() => {
+            orderMessageDiv.style.color = "#3c763d";
+            orderMessageDiv.textContent = "Order placed successfully! Redirecting to cart in 5 seconds...";
+            
+            checkoutForm.reset();  // Reset form immediately or after showing message, doesn't cause reload
+            
+            // Delay redirect by 5 seconds:
+            setTimeout(() => {
+                window.location.href = "AddToCart.html";  // Redirect here after delay
+            }, 5000);
+        })
+
+        .catch(() => {
+          orderMessageDiv.style.color = "#d9534f";
+          orderMessageDiv.textContent = "Failed to place order. Please try again.";
+        });
+      })
+      .catch(() => {
+        orderMessageDiv.style.color = "#d9534f";
+        orderMessageDiv.textContent = "Failed to retrieve cart items.";
+      });
+  });
+}
+
+  </script>
+</body>
+</html>
