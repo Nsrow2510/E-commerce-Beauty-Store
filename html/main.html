@@ -544,164 +544,207 @@
 
 
 <script>
-  const CART_API_URL = "http://localhost:3000/cart";
-const cartlist = document.getElementById("cartlist");
 
-// Update the cart badge count
-function updateCartCount() {
-  fetch(CART_API_URL)
-    .then(res => res.json())
-    .then(items => {
-      let count = 0;
-      items.forEach(item => { count += item.qty; });
-      const countSpan = document.getElementById("cart-count");
-      if (countSpan) countSpan.innerText = count;
-    })
-    .catch(() => {
-      const countSpan = document.getElementById("cart-count");
-      if (countSpan) countSpan.innerText = 0;
-    });
-}
+const API_BASE = "http://localhost:3000"; // json-server base
+const CART_API_URL = `${API_BASE}/cart`;
+const PRODUCTS_PATH = "./javascript/products.json"; // change path if your products.json is elsewhere
 
-// Render items in cart list
-function getCartItems() {
-  fetch(CART_API_URL)
-    .then(res => res.json())
-    .then(items => {
-      cartlist.innerHTML = "";
-      let totalAmount = 0;
-      let totalQty = 0;
-
-      if (items.length === 0) {
-        cartlist.innerHTML = "<p>Your cart is empty.</p>";
-        updateCartCount();
-        return;
-      }
-
-      items.forEach(item => {
-        totalAmount += item.price * item.qty;
-        totalQty += item.qty;
-
-        const div = document.createElement("div");
-        div.className = "cart-item";
-        div.innerHTML = `
-          <img src="${item.image}" width="70" alt="${item.title}">
-          <div>
-            <p>${item.title}</p>
-            <p>₹${item.price} x ${item.qty}</p>
-            <button class="qty-btn" data-id="${item.id}" data-action="decrease">-</button>
-            <button class="qty-btn" data-id="${item.id}" data-action="increase">+</button>
-            <button class="remove-btn" data-id="${item.id}">Remove</button>
-          </div>
-        `;
-        cartlist.appendChild(div);
-      });
-
-      const totalElement = document.getElementById("cart-total-amount");
-      if (totalElement) {
-        totalElement.innerText = `Total (${totalQty} items): ₹${totalAmount}`;
-      }
-      updateCartCount();
-    }).catch(() => {
-      cartlist.innerHTML = "<p>Failed to load cart items.</p>";
-      updateCartCount();
-    });
-}
-
-// Change quantity or remove item from cart
-function changeQty(id, newQty) {
-  if (newQty <= 0) {
-    removeFromCart(id);
-  } else {
-    fetch(`${CART_API_URL}/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ qty: newQty })
-    }).then(() => getCartItems());
-  }
-}
-
-function removeFromCart(id) {
-  fetch(`${CART_API_URL}/${id}`, { method: 'DELETE' })
-    .then(() => getCartItems());
-}
-
-// Event delegation for cart interaction buttons within cartlist
-cartlist.addEventListener("click", (event) => {
-  const target = event.target;
-  if (target.classList.contains("qty-btn")) {
-    const id = target.getAttribute("data-id");
-    const action = target.getAttribute("data-action");
-
-    const itemDiv = target.closest(".cart-item");
-    const qtyText = itemDiv.querySelector("p:nth-child(2)").textContent;
-    const currentQty = parseInt(qtyText.split("x")[1].trim());
-
-    if (action === "increase") {
-      changeQty(id, currentQty + 1);
-    } else if (action === "decrease") {
-      changeQty(id, currentQty - 1);
-    }
-  } else if (target.classList.contains("remove-btn")) {
-    const id = target.getAttribute("data-id");
-    removeFromCart(id);
-  }
-});
-
-// Add to cart from product buttons
 document.addEventListener("DOMContentLoaded", () => {
-  getCartItems();
-  updateCartCount();
 
-  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', async () => {
-      const card = button.closest('.product-box');
-      const title = card.querySelector('.product-name').innerText.trim();
-      // Extract price as number ignoring currency symbols
-      const priceText = card.querySelector('.price').innerText.trim();
-      const price = parseInt(priceText.replace(/[₹,]/g, ''));
-      const image = card.querySelector('img').src;
+  async function safeFetchJson(url, opts) {
+    try {
+      const r = await fetch(url, opts);
+      if (!r.ok) { console.warn(`Request to ${url} returned ${r.status}`); return null; }
+      try { return await r.json(); } catch(e){ console.warn("Failed parse JSON from", url); return null; }
+    } catch (err) { console.error("Network error fetching", url, err); return null; }
+  }
 
-      const product = { title, price, qty: 1, image };
+  function numericPriceFrom(v) { if (v == null) return 0; return Number(String(v).replace(/[^\d.-]/g,'')) || 0; }
 
-      // Check if product already in cart and update quantity if so
-      const existing = await fetch(`${CART_API_URL}?title=${encodeURIComponent(title)}`)
-        .then(res => res.json())
-        .catch(() => []);
+  function normalizeImagePathToAbsolute(img) {
+    if (!img) return window.location.origin + "/images/placeholder.png";
+    img = String(img).trim();
+    if (img.startsWith("http://") || img.startsWith("https://")) return img;
+    if (img.startsWith("../")) {
+      const without = img.replace(/^\.\.\//, "");
+      return window.location.origin + "/" + without.replace(/^\/+/, "");
+    }
+    if (img.startsWith("/")) return window.location.origin + img;
+    if (img.includes("/")) return window.location.origin + "/" + img.replace(/^\/+/, "");
+    return window.location.origin + "/images/" + img;
+  }
 
-      if (existing.length > 0) {
-        const existingItem = existing[0];
-        fetch(`${CART_API_URL}/${existingItem.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ qty: existingItem.qty + 1 })
-        })
-          .then(() => {
-            alert(`Quantity increased for ${title}!`);
-            updateCartCount();
-            getCartItems();
-          })
-          .catch(() => alert('Error updating quantity.'));
-      } else {
-        // Add new product to cart
-        fetch(CART_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(product)
-        })
-          .then(() => {
-            alert(`${title} added to cart!`);
-            updateCartCount();
-            getCartItems();
-          })
-          .catch(() => alert('Error adding product.'));
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
+  /* Render products from products.json (if .product-grid exists) */
+  async function renderProducts() {
+    const products = await safeFetchJson(PRODUCTS_PATH);
+    if (!Array.isArray(products)) return;
+    const container = document.querySelector(".product-grid") || document.querySelector(".products");
+    if (!container) return;
+    container.innerHTML = "";
+    products.forEach(prod => {
+      const title = prod.title || prod.name || "Product";
+      const priceNum = numericPriceFrom(prod.price ?? prod.mrp ?? prod.amount);
+      const img = normalizeImagePathToAbsolute(prod.image || prod.img || "");
+      const card = document.createElement("div");
+      card.className = "product-box";
+      card.style = "background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06);";
+      card.innerHTML = `
+        <a href="#"><img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" class="product-image" style="width:100%;height:160px;object-fit:cover;border-radius:6px;"></a>
+        <h3 class="product-name" style="margin:8px 0 6px">${escapeHtml(title)}</h3>
+        <div class="price-row"><span class="price">₹${priceNum}</span></div>
+        <button class="add-to-cart-btn" style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#c2185b;color:white;border:none;cursor:pointer;"
+                data-id="${escapeHtml(String(prod.id ?? ""))}"
+                data-title="${escapeHtml(title)}"
+                data-price="${escapeHtml(String(priceNum))}"
+                data-image="${escapeHtml(img)}">
+          Add to Cart
+        </button>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  /* Convert inline onclick(... ) to data-* if any remain */
+  function patchInlineOnclicks() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      const onclick = btn.getAttribute('onclick');
+      if (!onclick) return;
+      const matches = [...onclick.matchAll(/'([^']*)'/g)].map(m => m[1]);
+      if (matches.length >= 4) {
+        const [id, title, priceRaw, image] = matches;
+        btn.dataset.id = id;
+        btn.dataset.title = title;
+        btn.dataset.price = numericPriceFrom(priceRaw);
+        btn.dataset.image = normalizeImagePathToAbsolute(image);
+        btn.removeAttribute('onclick');
+      } else console.warn("Could not parse inline onclick:", onclick);
+    });
+  }
+
+  /* Cart UI references */
+  const cartlist = document.getElementById("cartlist");
+  const cartCountSpan = document.getElementById("cart-count") || document.querySelector(".badge");
+
+  async function updateCartCount() {
+    const items = await safeFetchJson(CART_API_URL);
+    let count = 0;
+    if (Array.isArray(items)) items.forEach(i => { count += (Number(i.qty) || 0); });
+    if (cartCountSpan) cartCountSpan.innerText = String(count);
+  }
+
+  async function getCartItems() {
+    if (!cartlist) return;
+    const items = await safeFetchJson(CART_API_URL);
+    cartlist.innerHTML = "";
+    if (!items || items.length === 0) {
+      cartlist.innerHTML = "<p>Your cart is empty.</p>";
+      updateCartCount();
+      return;
+    }
+    let totalAmount = 0, totalQty = 0;
+    items.forEach(it => {
+      const price = numericPriceFrom(it.price);
+      const qty = Number(it.qty) || 0;
+      totalAmount += price * qty;
+      totalQty += qty;
+      const imgSrc = normalizeImagePathToAbsolute(it.image || "");
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      div.innerHTML = `
+        <img src="${escapeHtml(imgSrc)}" width="70" alt="${escapeHtml(it.title || '')}">
+        <div class="cart-item-info">
+          <p class="cart-title">${escapeHtml(it.title || '')}</p>
+          <p class="cart-price">₹${price} x ${qty}</p>
+          <div class="cart-actions">
+            <button class="qty-btn" data-id="${it.id}" data-action="decrease">-</button>
+            <button class="qty-btn" data-id="${it.id}" data-action="increase">+</button>
+            <button class="remove-btn" data-id="${it.id}">Remove</button>
+          </div>
+        </div>
+      `;
+      cartlist.appendChild(div);
+    });
+    const totalElement = document.getElementById("cart-total-amount");
+    if (totalElement) totalElement.innerText = `Total (${totalQty} items): ₹${totalAmount}`;
+    updateCartCount();
+  }
+
+  /* Cart actions */
+  async function changeQty(id, newQty) {
+    if (!id) return;
+    if (newQty <= 0) { await removeFromCart(id); return; }
+    try {
+      await fetch(`${CART_API_URL}/${id}`, { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ qty: newQty }) });
+      await getCartItems();
+    } catch(e){ console.error(e); }
+  }
+  async function removeFromCart(id) {
+    if (!id) return;
+    try {
+      await fetch(`${CART_API_URL}/${id}`, { method: "DELETE" });
+      await getCartItems();
+    } catch(e){ console.error(e); }
+  }
+
+  if (cartlist) {
+    cartlist.addEventListener("click", ev => {
+      const t = ev.target;
+      if (t.classList.contains("qty-btn")) {
+        const id = t.dataset.id;
+        const action = t.dataset.action;
+        const priceText = t.closest(".cart-item").querySelector(".cart-price").textContent;
+        const match = priceText.match(/x\s*(\d+)/);
+        const curQty = match ? Number(match[1]) : 0;
+        if (action === "increase") changeQty(id, curQty + 1);
+        else if (action === "decrease") changeQty(id, curQty - 1);
+      } else if (t.classList.contains("remove-btn")) {
+        removeFromCart(t.dataset.id);
       }
     });
-  });
+  }
+
+  /* Add-to-cart handling */
+  function attachAddToCartHandlers() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const title = btn.dataset.title || (btn.closest('.product-box') && (btn.closest('.product-box').querySelector('.product-name')?.innerText.trim()));
+        const price = numericPriceFrom(btn.dataset.price || (btn.closest('.product-box') && (btn.closest('.product-box').querySelector('.price')?.innerText)));
+        let image = btn.dataset.image || (btn.closest('.product-box') && (btn.closest('.product-box').querySelector('img')?.getAttribute('src') || btn.closest('.product-box').querySelector('img')?.src)) || "";
+        image = normalizeImagePathToAbsolute(image);
+        if (!title) { alert("Cannot add to cart: product title missing"); return; }
+        const product = { title, price, qty: 1, image };
+
+        try {
+          const existing = await safeFetchJson(`${CART_API_URL}?title=${encodeURIComponent(title)}`) || [];
+          if (existing.length > 0) {
+            const it = existing[0];
+            await fetch(`${CART_API_URL}/${it.id}`, { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ qty: (Number(it.qty)||0)+1 }) });
+            alert(`${title} quantity increased`);
+            updateCartCount();
+            getCartItems();
+          } else {
+            await fetch(CART_API_URL, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(product) });
+            alert(`${title} added to cart`);
+            updateCartCount();
+            getCartItems();
+          }
+        } catch(err){ console.error("Add to cart failed", err); alert("Add to cart failed (see console)"); }
+      });
+    });
+  }
+
+  /* init */
+  (async function init(){
+    await renderProducts();
+    patchInlineOnclicks();
+    attachAddToCartHandlers();
+    await getCartItems();
+    await updateCartCount();
+  })();
+
 });
-
-
-
 </script>
 
   <script src="../javascript/script.js"></script>

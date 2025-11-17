@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // //////////////////*CHATBOT*///////////////////
 let productData = {};
 
-fetch("products.json")
+fetch("../json/products.json")
   .then(res => res.json())
   .then(data => productData = data);
 
